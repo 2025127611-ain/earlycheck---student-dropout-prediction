@@ -1,0 +1,21 @@
+[theme]
+base = "light"
+primaryColor = "#4F46E5"
+backgroundColor = "#F4F6FB"
+secondaryBackgroundColor = "#EEF2FF"
+textColor = "#1E1B4B"
+
+[theme.sidebar]
+backgroundColor = "#1E1B4B"
+secondaryBackgroundColor = "#312E81"
+textColor = "#E0E7FF"
+
+[server]
+headless = true
+enableXsrfProtection = true
+
+[client]
+toolbarMode = "viewer"
+
+[browser]
+gatherUsageStats = false

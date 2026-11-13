@@ -1,0 +1,366 @@
+{
+  "model_name": "XGBoost",
+  "use_vle": true,
+  "selected_columns": [
+    "assess_submitted",
+    "n_missing",
+    "missing_rate",
+    "n_late",
+    "avg_score",
+    "active_days",
+    "clicks_recent",
+    "recent_share",
+    "clk_homepage",
+    "clk_quiz"
+  ],
+  "selected_units": [
+    "active_days",
+    "assess_submitted",
+    "avg_score",
+    "clicks_recent",
+    "clk_homepage",
+    "clk_quiz",
+    "missing_rate",
+    "n_late",
+    "n_missing",
+    "recent_share"
+  ],
+  "required_inputs": [
+    "active_days",
+    "assess_due",
+    "assess_submitted",
+    "avg_score",
+    "clicks_recent",
+    "clk_homepage",
+    "clk_quiz",
+    "n_late",
+    "total_clicks"
+  ],
+  "base_value": 0.36171058844059467,
+  "thresholds": {
+    "low_max": 0.4,
+    "high_min": 0.7
+  },
+  "imbalance": "smotenc",
+  "results": {
+    "Decision Tree": {
+      "accuracy": 0.8789934354485777,
+      "precision": 0.8093306288032455,
+      "recall": 0.8153950953678474,
+      "f1": 0.8123515439429929,
+      "roc_auc": 0.9334919723058166,
+      "pr_auc": 0.9021309777886821,
+      "brier": 0.08692633745150777,
+      "recall_at_alert": 0.832425068119891,
+      "precision_at_alert": 0.766624843161857,
+      "tn": 2820,
+      "fp": 282,
+      "fn": 271,
+      "tp": 1197,
+      "cv_auc": 0.9394875782891644,
+      "best_params": {
+        "criterion": "entropy",
+        "max_depth": 6,
+        "min_samples_leaf": 50
+      }
+    },
+    "Random Forest": {
+      "accuracy": 0.8927789934354485,
+      "precision": 0.8548621190130624,
+      "recall": 0.8024523160762943,
+      "f1": 0.8278285312719607,
+      "roc_auc": 0.9410153553038648,
+      "pr_auc": 0.9186881004985612,
+      "brier": 0.07893504342933257,
+      "recall_at_alert": 0.840599455040872,
+      "precision_at_alert": 0.79204107830552,
+      "tn": 2902,
+      "fp": 200,
+      "fn": 290,
+      "tp": 1178,
+      "cv_auc": 0.9464023769106772,
+      "best_params": {
+        "max_depth": 12,
+        "max_features": "sqrt",
+        "min_samples_leaf": 8,
+        "n_estimators": 400
+      }
+    },
+    "XGBoost": {
+      "accuracy": 0.8969365426695842,
+      "precision": 0.8825786646201075,
+      "recall": 0.7833787465940054,
+      "f1": 0.8300252616383977,
+      "roc_auc": 0.9433386125150864,
+      "pr_auc": 0.9213024318436229,
+      "brier": 0.07554086297750473,
+      "recall_at_alert": 0.829700272479564,
+      "precision_at_alert": 0.8263229308005428,
+      "tn": 2949,
+      "fp": 153,
+      "fn": 318,
+      "tp": 1150,
+      "cv_auc": 0.947896525253707,
+      "best_params": {
+        "colsample_bytree": 0.8,
+        "learning_rate": 0.03,
+        "max_depth": 5,
+        "min_child_weight": 1,
+        "n_estimators": 400,
+        "subsample": 0.8
+      }
+    }
+  },
+  "data_info": {
+    "use_vle": true,
+    "enrolments_total": 32593,
+    "duplicate_rows": 0,
+    "missing_imd": 1111,
+    "missing_registration_date": 45,
+    "already_withdrawn_at_cutoff": 9662,
+    "enrolments_eligible": 22931,
+    "at_risk_share": 0.3290741790589159,
+    "n_students_unique": 21477,
+    "vle_cols": [
+      "total_clicks",
+      "clicks_recent",
+      "active_days",
+      "n_sites",
+      "clk_homepage",
+      "clk_forumng",
+      "clk_oucontent",
+      "clk_subpage",
+      "clk_resource",
+      "clk_url",
+      "clk_quiz",
+      "clk_other"
+    ],
+    "quality": {
+      "duplicated_enrolments": 0,
+      "submitted_gt_due": 0,
+      "avg_score_out_of_range": 0,
+      "missing_values": 6
+    },
+    "n_train": 18361,
+    "n_test": 4570,
+    "n_train_students": 17181,
+    "n_test_students": 4296,
+    "weeks_before_exam": 5,
+    "cutoffs": {
+      "AAA 2013J": 233,
+      "AAA 2014J": 234,
+      "BBB 2013J": 233,
+      "BBB 2014J": 227,
+      "BBB 2013B": 205,
+      "BBB 2014B": 199,
+      "CCC 2014J": 234,
+      "CCC 2014B": 206,
+      "DDD 2013J": 226,
+      "DDD 2014J": 227,
+      "DDD 2013B": 205,
+      "DDD 2014B": 206,
+      "EEE 2013J": 200,
+      "EEE 2014J": 200,
+      "EEE 2014B": 193,
+      "FFF 2013J": 201,
+      "FFF 2014J": 206,
+      "FFF 2013B": 187,
+      "FFF 2014B": 192,
+      "GGG 2013J": 194,
+      "GGG 2014J": 194,
+      "GGG 2014B": 187
+    }
+  },
+  "rfe_ranking": {
+    "assess_submitted": 1,
+    "n_late": 1,
+    "missing_rate": 1,
+    "active_days": 1,
+    "avg_score": 1,
+    "n_missing": 1,
+    "recent_share": 1,
+    "clicks_recent": 1,
+    "clk_quiz": 1,
+    "clk_homepage": 1,
+    "total_clicks": 2,
+    "clk_oucontent": 3,
+    "n_sites": 4,
+    "late_rate": 5,
+    "clk_subpage": 6,
+    "clk_forumng": 7,
+    "clk_url": 8,
+    "clicks_per_active_day": 9,
+    "clk_resource": 10,
+    "assess_due": 11,
+    "no_submission": 12,
+    "clk_other": 13,
+    "reg_timing": 14,
+    "imd_band": 15,
+    "code_module=BBB": 16,
+    "code_module=FFF": 17,
+    "highest_education": 18,
+    "code_module=DDD": 19,
+    "studied_credits": 20,
+    "code_presentation=2013B": 21,
+    "num_of_prev_attempts": 22,
+    "code_module=CCC": 23,
+    "code_presentation=2014J": 24,
+    "code_module=GGG": 25,
+    "code_presentation=2014B": 26,
+    "code_presentation=2013J": 27,
+    "code_module=EEE": 28,
+    "age_band": 29,
+    "no_vle": 30,
+    "code_module=AAA": 31
+  },
+  "rfe_cv": [
+    {
+      "n_features": 10,
+      "auc": 0.9463262434435762
+    },
+    {
+      "n_features": 12,
+      "auc": 0.9456731598139714
+    },
+    {
+      "n_features": 14,
+      "auc": 0.9451133731129723
+    },
+    {
+      "n_features": 16,
+      "auc": 0.9461803544238153
+    },
+    {
+      "n_features": 18,
+      "auc": 0.9455724777082661
+    },
+    {
+      "n_features": 20,
+      "auc": 0.9448437146829576
+    },
+    {
+      "n_features": 22,
+      "auc": 0.9449226441414759
+    },
+    {
+      "n_features": 24,
+      "auc": 0.9443905653045059
+    },
+    {
+      "n_features": 26,
+      "auc": 0.9457764741672723
+    },
+    {
+      "n_features": 28,
+      "auc": 0.9456602567361131
+    },
+    {
+      "n_features": 30,
+      "auc": 0.9454602043539907
+    },
+    {
+      "n_features": 32,
+      "auc": 0.9453694094502859
+    },
+    {
+      "n_features": 34,
+      "auc": 0.9448290431270241
+    },
+    {
+      "n_features": 36,
+      "auc": 0.9453063165549566
+    },
+    {
+      "n_features": 38,
+      "auc": 0.9452933132144545
+    },
+    {
+      "n_features": 40,
+      "auc": 0.9449245784189276
+    }
+  ],
+  "exclude_sensitive": true,
+  "split_comparison": {
+    "80:20": {
+      "n_train": 18361,
+      "n_test": 4570,
+      "models": {
+        "Decision Tree": {
+          "accuracy": 0.8789934354485777,
+          "precision": 0.8093306288032455,
+          "recall": 0.8153950953678474,
+          "f1": 0.8123515439429929,
+          "roc_auc": 0.9334919723058166
+        },
+        "Random Forest": {
+          "accuracy": 0.8927789934354485,
+          "precision": 0.8548621190130624,
+          "recall": 0.8024523160762943,
+          "f1": 0.8278285312719607,
+          "roc_auc": 0.9410153553038648
+        },
+        "XGBoost": {
+          "accuracy": 0.8969365426695842,
+          "precision": 0.8825786646201075,
+          "recall": 0.7833787465940054,
+          "f1": 0.8300252616383977,
+          "roc_auc": 0.9433386125150864
+        }
+      }
+    },
+    "70:30": {
+      "n_train": 16061,
+      "n_test": 6870,
+      "models": {
+        "Decision Tree": {
+          "accuracy": 0.8797671033478893,
+          "precision": 0.8265213442325159,
+          "recall": 0.803886925795053,
+          "f1": 0.8150470219435737,
+          "roc_auc": 0.9361553968629029
+        },
+        "Random Forest": {
+          "accuracy": 0.8924308588064046,
+          "precision": 0.8643096034400383,
+          "recall": 0.7990282685512368,
+          "f1": 0.8303878815698875,
+          "roc_auc": 0.9430376475452973
+        },
+        "XGBoost": {
+          "accuracy": 0.8978165938864628,
+          "precision": 0.8885572139303483,
+          "recall": 0.7888692579505301,
+          "f1": 0.8357510528778662,
+          "roc_auc": 0.94466523922553
+        }
+      }
+    },
+    "60:40": {
+      "n_train": 13777,
+      "n_test": 9154,
+      "models": {
+        "Decision Tree": {
+          "accuracy": 0.8788507756172165,
+          "precision": 0.8469985358711567,
+          "recall": 0.7700499168053244,
+          "f1": 0.8066933937598048,
+          "roc_auc": 0.9337625343352233
+        },
+        "Random Forest": {
+          "accuracy": 0.8921782827179375,
+          "precision": 0.8695970695970696,
+          "recall": 0.7900166389351082,
+          "f1": 0.8278988666085441,
+          "roc_auc": 0.9422277447816279
+        },
+        "XGBoost": {
+          "accuracy": 0.8988420362682981,
+          "precision": 0.8944971537001898,
+          "recall": 0.7843594009983361,
+          "f1": 0.8358156028368794,
+          "roc_auc": 0.943377858066555
+        }
+      }
+    }
+  }
+}

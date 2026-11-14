@@ -25,6 +25,13 @@ if V.empty:
     st.warning("No students match these filters.")
     st.stop()
 
+# general chart: ignores the Risk level filter (all risk levels, % = share of all students)
+G = S
+if mods:
+    G = G[G["module"].isin(mods)]
+if pres:
+    G = G[G["intake"].isin(pres)]
+
 # ------------------------------------------------------------------ KPIs
 cnt = V["level"].value_counts().to_dict()
 n = len(V)
@@ -41,7 +48,12 @@ c1, c2 = st.columns(2)
 with c1, st.container(border=True):
     st.plotly_chart(ui.donut(cnt), width="stretch")
 with c2, st.container(border=True):
-    st.plotly_chart(ui.reason_bar(V), width="stretch")
+    _rb = ui.reason_bar(G)
+    if _rb is None:
+        st.markdown("##### What pushes students towards dropping out most?")
+        st.info("No students in this selection show a factor that raises risk.")
+    else:
+        st.plotly_chart(_rb, width="stretch")
 with st.container(border=True):
     st.plotly_chart(ui.course_stack(V), width="stretch")
 
@@ -63,7 +75,7 @@ if sel:
 st.download_button("Download list (CSV)", tbl.to_csv(index=False).encode(), "student_risk_list.csv", "text/csv")
 
 st.divider()
-with st.container(border=True):
+with st.container(key="navbox_home"):
     c1, c2 = st.columns([3, 1], vertical_alignment="center")
     c1.markdown("##### Want to check a student who is not in this list?\n"
                 "Enter their details and get an instant risk prediction with the reasons.")

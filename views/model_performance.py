@@ -13,7 +13,7 @@ D = M["data_info"]
 MAIN = M.get("main_split", "80:20")
 IMB = {"smotenc": "SMOTENC on training folds only", "class_weight": "Class weights", "none": "None"}
 
-ui.header("Model Performance")
+ui.header("Model Performance", "Risk is a prediction to support early help, not a final judgement about any student.")
 
 # ------------------------------------------------------------------ headline numbers
 k = st.columns(4)
@@ -30,25 +30,32 @@ st.write("")
 
 # ------------------------------------------------------------------ comparison
 st.subheader(f"Model comparison ({MAIN} test set)")
+BASE = "Decision Tree"
+label = lambda n: n + " (baseline)" if n == BASE else n
 rows = []
 for name, m in R.items():
-    rows.append({"Model": name + (" (selected)" if name == M["model_name"] else ""),
+    rows.append({"Model": label(name),
                  "Accuracy": m["accuracy"], "Precision": m["precision"], "Recall": m["recall"], "F1": m["f1"],
                  "ROC-AUC": m["roc_auc"], "PR-AUC": m["pr_auc"], f"Recall @ risk>={cfg.LOW_MAX:.0%}": m["recall_at_alert"],
                  "CV ROC-AUC (train)": m["cv_auc"]})
 def _hl(color):
-    return lambda r: [f"background-color: {color}; font-weight: 700" if "(selected)" in str(r.name) else "" for _ in r]
+    chosen = label(M["model_name"])          # the row of the selected model is highlighted (values only)
+    sty = f"background-color: {color}; color: #1E1B4B; font-weight: 700"
+    return lambda r: [""] + [sty] * (len(r) - 1) if r.iloc[0] == chosen else [""] * len(r)
 
 
-st.dataframe(pd.DataFrame(rows).set_index("Model").style.format("{:.3f}").apply(_hl("#C7D2FE"), axis=1),
-             width="stretch")
+ui.table(pd.DataFrame(rows), fmt="{:.3f}", highlight=_hl("#C7D2FE"))
+if BASE in R and M["model_name"] != BASE:
+    st.caption(f"Baseline = Decision Tree (simplest model). All three models are tuned the same way (GridSearchCV). "
+               f"{M['model_name']} improves ROC-AUC by {R[M['model_name']]['roc_auc'] - R[BASE]['roc_auc']:+.3f} "
+               f"and accuracy by {R[M['model_name']]['accuracy'] - R[BASE]['accuracy']:+.3f} over the baseline.")
 
 c1, c2 = st.columns([1.3, 1])
 with c1, st.container(border=True):
     fig = go.Figure()
     colors = {"Decision Tree": "#F5A524", "Random Forest": "#0EA5A4", "XGBoost": ui.BRAND}
     for name, m in R.items():
-        fig.add_bar(name=name, x=["Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
+        fig.add_bar(name=label(name), x=["Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
                     y=[m["accuracy"], m["precision"], m["recall"], m["f1"], m["roc_auc"]],
                     marker=dict(color=colors.get(name, "#888"), cornerradius=4))
     fig.update_layout(barmode="group", legend=dict(orientation="h", y=1.0, x=0.0, yanchor="bottom"), margin=dict(t=80))
@@ -89,20 +96,30 @@ if SC:
     best_i = sdf.sort_values(["ROC-AUC", "Accuracy"], ascending=False).index[0]
     used_i = sdf.index[(sdf["Split (train:test)"] == MAIN) & (sdf["Model"] == M["model_name"])][0]
     tab = sdf.copy()
+    tab["Model"] = tab["Model"].map(label)
     tab["Note"] = ""
     tab.loc[best_i, "Note"] = "Best score"
-    tab.loc[used_i, "Note"] = "Used in dashboard" if used_i != best_i else "Best score + used in dashboard"
+    tab.loc[used_i, "Note"] = "Used in dashboard" if used_i != best_i else "Best + used in dashboard"
+
+    # one colour per split ratio, ONLY in the first column (light bg / dark text, dark bg / white text)
+    _order = list(dict.fromkeys(sdf["Split (train:test)"]))
+    _LIGHT = [("#C7D2FE", "#1E1B4B"), ("#A7F3D0", "#064E3B"), ("#FDE68A", "#78350F"), ("#FBCFE8", "#831843")]
+    _DARK = [("#3730A3", "#FFFFFF"), ("#0F766E", "#FFFFFF"), ("#B45309", "#FFFFFF"), ("#9D174D", "#FFFFFF")]
+
+    def _split_cell(label):
+        bg, fg = (_DARK if ui.dark() else _LIGHT)[_order.index(label) % 4]
+        return f"background-color: {bg}; color: {fg}; font-weight: 700"
 
     def _row(r):
+        first = _split_cell(r.iloc[0])
         if r.name == best_i:
-            return ["background-color: #BBF7D0; font-weight: 700"] * len(r)
+            return [first] + ["background-color: #BBF7D0; color: #14532D; font-weight: 700"] * (len(r) - 1)
         if r.name == used_i:
-            return ["background-color: #C7D2FE; font-weight: 700"] * len(r)
-        return [""] * len(r)
+            return [first] + ["background-color: #C7D2FE; color: #1E1B4B; font-weight: 700"] * (len(r) - 1)
+        return [first] + [""] * (len(r) - 1)
 
-    st.dataframe(tab.style.apply(_row, axis=1).format(
-        {"Train rows": "{:,}", "Test rows": "{:,}", "Accuracy": "{:.3f}", "Precision": "{:.3f}", "Recall": "{:.3f}",
-         "F1": "{:.3f}", "ROC-AUC": "{:.3f}"}), hide_index=True, width="stretch")
+    ui.table(tab, fmt={"Train rows": "{:,}", "Test rows": "{:,}", "Accuracy": "{:.3f}", "Precision": "{:.3f}",
+                       "Recall": "{:.3f}", "F1": "{:.3f}", "ROC-AUC": "{:.3f}"}, highlight=_row)
     gap = sdf.loc[best_i, "ROC-AUC"] - sdf.loc[used_i, "ROC-AUC"]
     st.caption(f"Green = best ROC-AUC in this table. Blue = the model the dashboard uses "
                f"({M['model_name']}, {MAIN}). ROC-AUC gap between them: {gap:.3f}.")
@@ -114,8 +131,8 @@ if SC:
             nz = pd.DataFrame(json.loads(sn.read_text())["rows"])
             nz["Accuracy (mean +- sd)"] = nz.apply(lambda r: f"{r.acc_mean:.3f} +- {r.acc_sd:.3f}", axis=1)
             nz["ROC-AUC (mean +- sd)"] = nz.apply(lambda r: f"{r.auc_mean:.3f} +- {r.auc_sd:.3f}", axis=1)
-            st.dataframe(nz[["split", "repeats", "Accuracy (mean +- sd)", "ROC-AUC (mean +- sd)"]].rename(
-                columns={"split": "Split", "repeats": "Random splits"}), hide_index=True, width="stretch")
+            ui.table(nz[["split", "repeats", "Accuracy (mean +- sd)", "ROC-AUC (mean +- sd)"]].rename(
+                columns={"split": "Split", "repeats": "Random splits"}))
             st.caption("Each ratio repeated with different random student splits. If the gap between ratios is smaller "
                        "than the +- spread, the difference is chance, not a real improvement.")
         else:
@@ -155,7 +172,7 @@ c1, c2 = st.columns([1, 1.2])
 with c1:
     feat = pd.DataFrame({"Variable": [P.units[u]["label"] for u in M["selected_units"]],
                          "Type": [P.units[u]["group"] for u in M["selected_units"]]})
-    st.dataframe(feat, hide_index=True, width="stretch")
+    ui.table(feat)
 with c2, st.container(border=True):
     cv = pd.DataFrame(M["rfe_cv"]).sort_values("n_features")
     fig = go.Figure(go.Scatter(x=cv["n_features"], y=cv["auc"], mode="lines+markers",
@@ -166,6 +183,3 @@ with c2, st.container(border=True):
     fig.update_yaxes(title="CV ROC-AUC", gridcolor=ui.pal()["grid"])
     st.plotly_chart(ui._layout(fig, 320, title="RFE: accuracy vs number of features"), width="stretch")
 
-st.success(f"Home, SHAP Explanation and Live Prediction all use the same trained model: **{M['model_name']}** "
-           "(highest cross-validated ROC-AUC on the training set).")
-st.info("Risk is a prediction to support early help, not a final judgement about any student.")

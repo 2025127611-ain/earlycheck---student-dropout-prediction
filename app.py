@@ -9,10 +9,11 @@ st.set_page_config(page_title="Student Dropout Risk Prediction", page_icon=str(R
 
 from core import ui  # noqa: E402
 
-ui.inject_css()
-# keep what was typed on the Live Prediction form when the user visits another page (cleared only by "Reset form")
-for _k in [k for k in st.session_state if str(k).startswith("in_")]:
+# keep the dark-mode switch and what was typed on the Live Prediction form when the user changes page
+# (also when a button uses st.switch_page); they are cleared only by "Reset form".
+for _k in [k for k in st.session_state if str(k).startswith("in_") or k == "dark_mode"]:
     st.session_state[_k] = st.session_state[_k]
+ui.inject_css()
 st.logo(str(ROOT / "assets" / "logo.svg"), icon_image=str(ROOT / "assets" / "icon.svg"), size="large")
 nav = st.navigation([
     st.Page("views/home.py", title="Home", icon=":material/dashboard:", default=True),

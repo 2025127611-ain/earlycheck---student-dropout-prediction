@@ -29,7 +29,7 @@ with k[3]:
 st.write("")
 
 # ------------------------------------------------------------------ comparison
-st.subheader(f"Model comparison ({MAIN} test set)")
+st.subheader(f"Model comparison")
 BASE = "Decision Tree"
 label = lambda n: n + " (baseline)" if n == BASE else n
 rows = []

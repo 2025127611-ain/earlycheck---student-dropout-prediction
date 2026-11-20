@@ -20,8 +20,7 @@ Put the file in `data/studentVle.csv` on **your computer only** (it is in `.giti
 
 It is read in chunks (low RAM) and turned into: total clicks, active days, distinct sites, clicks per active day,
 recent-4-week share, and clicks per activity type. If the file is missing, training continues without click features.
-The shipped `artifacts/` were trained **without** it.
-
+The shipped `artifacts/` were trained **with** it (`use_vle: true` in `artifacts/meta.json`).
 ## Run
     python -m venv .venv && .venv\Scripts\activate
     pip install -r requirements.txt
